@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row column text-center">
+    <h4>Compare Result (player1 against player2): {{result}}</h4>
+</div>
+<div class="row column">
+    <div class="medium-6 columns">
+       <ul>
+           <li>{{s1.player.name}}</li>
+           <li>{{s1.player.steam_id}}</li>
+           <li>{{s1.player.personaname}}</li>
+           <li>{{s1.week_score}}</li>
+           <li>{{s1.month_score}}</li>
+           <li>{{s1.year_score}}</li>
+           <li>{{s1.overall_score}}</li>
+           <li>{{s1.overall_count}}</li>
+           <li>{{s1.score_date}}</li>
+       </ul>
+    </div>
+    <div class="medium-6 columns">
+        <ul>
+            <li>{{s2.player.name}}</li>
+            <li>{{s2.player.steam_id}}</li>
+            <li>{{s2.player.personaname}}</li>
+            <li>{{s2.week_score}}</li>
+            <li>{{s2.month_score}}</li>
+            <li>{{s2.year_score}}</li>
+            <li>{{s2.overall_score}}</li>
+            <li>{{s2.overall_count}}</li>
+            <li>{{s2.score_date}}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

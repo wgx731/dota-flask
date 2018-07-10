@@ -1,7 +1,4 @@
 {% extends "base.html" %}
-{% block title %}
-    Leader Board
-{% endblock %}
 {% block content %}
     <table>
         <thead>
@@ -26,6 +23,7 @@
                     <td>{{score.month_score}}</td>
                     <td>{{score.year_score}}</td>
                     <td>{{score.overall_score}}</td>
+                    <td>{{score.overall_count}}</td>
                     <td>{{score.score_date}}</td>
                 </tr>
             {% endfor %}

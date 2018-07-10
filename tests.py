@@ -2,7 +2,7 @@ import unittest
 import os
 from datetime import date
 from app import app, db, default_db_path, default_db_uri
-from app.models import Player, Score
+from app.models import Player, MatchScore
 
 
 class DotaFlaskTest(unittest.TestCase):
@@ -30,10 +30,11 @@ class DotaFlaskTest(unittest.TestCase):
             name="player1",
             avatar="p1.jpg"
         )
-        Score(
+        MatchScore(
             week_score=0.5,
             month_score=0.6,
             year_score=0.3,
+            overall_count=10,
             overall_score=0.5313,
             player=p1
         )
@@ -44,10 +45,11 @@ class DotaFlaskTest(unittest.TestCase):
             name="player2",
             avatar="p2.jpg"
         )
-        s2 = Score(
+        s2 = MatchScore(
             week_score=0.6,
             month_score=0.5,
             year_score=0.2,
+            overall_count=100,
             overall_score=0.4313,
             player=p2
         )
@@ -78,6 +80,8 @@ class DotaFlaskTest(unittest.TestCase):
         self.app.get('/leaderboard?ids=1,2&sort=M')
         self.assertEqual(result.status_code, 200)
         self.app.get('/leaderboard?ids=1,2&sort=Y')
+        self.assertEqual(result.status_code, 200)
+        self.app.get('/leaderboard?ids=1,2&sort=c')
         self.assertEqual(result.status_code, 200)
         # test only 1 correct id
         result = self.app.get('/leaderboard?ids=1,3')

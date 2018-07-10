@@ -32,15 +32,16 @@ class Player(db.Model):
         )
 
 
-class Score(db.Model):
+class MatchScore(db.Model):
     """A Score class"""
-    __tablename__ = 'score'
+    __tablename__ = 'match_score'
 
     score_id = db.Column(db.Integer, primary_key=True)
     week_score = db.Column(db.Float)
     month_score = db.Column(db.Float)
     year_score = db.Column(db.Float)
     overall_score = db.Column(db.Float)
+    overall_count = db.Column(db.Integer)
     score_date = db.Column(db.Date, nullable=False,
                            default=date.today)
     account_id = db.Column(db.Integer, db.ForeignKey('player.account_id'),
@@ -55,9 +56,15 @@ class Score(db.Model):
             'month_score': self.month_score,
             'year_score': self.year_score,
             'overall_score': self.overall_score,
+            'overall_count': self.overall_count,
             'score_date': str(self.score_date),
             'player': self.player.to_dict()
         }
+
+    def get_compare_score(self):
+        return self.overall_score * 0.4 + self.overall_count * 0.4 \
+               + self.week_score * 0.1 + self.month_score * 0.05 \
+               + self.year_score * 0.05
 
     def __repr__(self):
         return '<Score %r>' % self.overall_score
