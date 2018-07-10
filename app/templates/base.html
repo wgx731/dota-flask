@@ -1,0 +1,52 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% if title %}
+        <title>{{ title }} | dota-flask</title>
+        {% else %}
+        <title>jackal-flask</title>
+        {% endif %}
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/foundation/6.2.4/foundation.min.css" integrity="sha256-NqI559iHqiWe5VxDi9mXE8i83ghn8Ru8BINyiPN7lDg=" crossorigin="anonymous">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css" integrity="sha256-Q9c+RVayp4Y4gEKE3jaABDEwnMlDf6cFEWEQSzFaOB8=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dc/2.1.8/dc.min.css" integrity="sha256-WHvgKNpdomdSPf4EGBla0Wx7QZpnZyKAOvuHQcuMHNs=" crossorigin="anonymous" />
+        <!-- Global Site Tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{gtag_tracking_id}}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments)};
+            gtag('js', new Date());
+
+            gtag('config', '{{gtag_tracking_id}}');
+        </script>
+    </head>
+    <body>
+        <div class="row column text-center">
+            <h1>Dota Flask</h1>
+            <p class="lead callout">Check your DOTA status with open DOTA API.</p>
+        </div>
+        {% block content %}{% endblock %}
+        <div class="row column">
+            <div class="medium-6 columns">
+                <ul class="menu">
+                    <li><a href="https://github.com/wgx731" target="_blank"><i class="fi-social-github"></i> Github</a></li>
+                    <li><a href="https://www.linkedin.com/in/wgx731" target="_blank"><i class="fi-social-linkedin"></i> LinkedIn</a></li>
+                    <li><a href="https://twitter.com/wgx731" target="_blank"><i class="fi-social-twitter"></i> Twitter</a></li>
+                    <li><a href="https://www.facebook.com/wgx731" target="_blank"><i class="fi-social-facebook"></i> Facebook</a></li>
+                </ul>
+            </div>
+            <div class="medium-6 columns">
+                <ul class="menu float-right">
+                    <li class="menu-text">dota-flask © 2018+, @wgx731. Released under the MIT License.</li>
+                </ul>
+            </div>
+        </div>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js" integrity="sha256-mRYlCu5EG+ouD07WxLF8v4ZAZYCA6WrmdIXyn1Bv9Vk=" crossorigin="anonymous"></script>
+        {% block addjs %}{% endblock %}
+        <script>$(document).foundation();</script>
+    </body>
+</html>
