@@ -54,24 +54,37 @@ class DotaFlaskTest(unittest.TestCase):
         db.session.add(p1)
         db.session.add(p2)
         db.session.commit()
-        # test
+        # test model
         self.assertEqual(str(p1), 'Player - id: 1 name: player1 avatar: p1.jpg')
         self.assertEqual(str(s2), 'Score - id: 2 date: ' + str(date.today()) + ' \
                 week: 0.6 month: 0.5 year: 0.2 overall: 0.4313')
+        # test wrong id
         result = self.app.get('/leaderboard?ids=3')
         self.assertEqual(result.status_code, 404)
+        # test missing id
         result = self.app.get('/leaderboard')
         self.assertEqual(result.status_code, 400)
+        # test too many ids
         result = self.app.get('/leaderboard?ids=1,2,3,4,5,6,7,8,9,10,11')
         self.assertEqual(result.status_code, 400)
+        # test correct ids
         result = self.app.get('/leaderboard?ids=1,2')
         self.assertEqual(result.status_code, 200)
         self.assertIn(b'player1', result.data)
         self.assertIn(b'player2', result.data)
+        # test sort
+        self.app.get('/leaderboard?ids=1,2&sort=W')
+        self.assertEqual(result.status_code, 200)
+        self.app.get('/leaderboard?ids=1,2&sort=M')
+        self.assertEqual(result.status_code, 200)
+        self.app.get('/leaderboard?ids=1,2&sort=Y')
+        self.assertEqual(result.status_code, 200)
+        # test only 1 correct id
         result = self.app.get('/leaderboard?ids=1,3')
         self.assertEqual(result.status_code, 200)
         self.assertIn(b'player1', result.data)
         self.assertNotIn(b'player2', result.data)
+        # test json response
         result = self.app.get('/leaderboard?ids=1,2', headers={
             'Accept': 'application/json'
         })
