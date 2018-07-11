@@ -195,7 +195,7 @@ class DotaFlaskTest(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertIn(b'player1', result.data)
         self.assertIn(b'player2', result.data)
-        self.assertIn(b'-35.96', result.data)
+        self.assertIn(b'-0.00030253599999999214', result.data)
         # clean up
         self.__clean_test_data()
 

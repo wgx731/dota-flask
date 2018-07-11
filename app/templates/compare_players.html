@@ -33,7 +33,7 @@
     </div>
 </div>
 <div class="row column text-center">
-    <p class="callout small secondary">Compare Formula: overall_score * 0.4 + overall_count * 0.4 + week_score * 0.1 + month_score * 0.05 + year_score * 0.05</p>
+    <p class="callout small secondary">Compare Formula: normalized_overall_win_count * 0.8 + week_score * 0.1 + month_score * 0.05 + year_score * 0.05</p>
     <p class="callout large primary">Compare Result({{s1.player.account_id}} against {{s2.player.account_id}}): {{result}}</p>
 </div>
 {% endblock %}
