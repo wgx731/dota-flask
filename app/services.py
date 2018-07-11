@@ -108,7 +108,7 @@ def get_player_match_scores(player_id_list):
     if len(player_list) == len(player_id_list):
         return player_list
     # only fetch from API if id is not in database
-    player_id_list = player_id_list - [p.account_id for p in player_list]
+    player_id_list = set(player_id_list) - set([p.account_id for p in player_list])
     app.logger.info("load from API for " + str(player_id_list))
     for player_id in player_id_list:
         score = fetch_player_match_score(player_id)
