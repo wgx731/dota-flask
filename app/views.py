@@ -67,11 +67,11 @@ def compare_players():
         return abort(404)
     compare_result = s1.get_compare_score() - s2.get_compare_score()
     if accept_json(request):
-        return {
+        return jsonify({
             'result': compare_result,
             'player1': s1.to_dict(),
             'player2': s2.to_dict()
-        }
+        })
     else:
         return render_template(
             'compare_players.html',
