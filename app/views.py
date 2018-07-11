@@ -10,20 +10,17 @@ from flask import request, abort, render_template, jsonify
 def error(e):
     app.logger.error("error occurred: %s" % e)
     try:
-        print(e.code)
+        code = e.code
         return render_template(
             'error.html',
-            code=e.code,
             message=str(e)
-        )
+        ), code
     except Exception as e:
         app.logger.error('exception is %s' % e)
-    finally:
         return render_template(
             'error.html',
-            code=500,
             message='unknown error.'
-        )
+        ), 500
 
 
 @app.route('/leaderboard', methods=['GET'])
