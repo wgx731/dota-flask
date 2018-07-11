@@ -69,26 +69,26 @@ def get_match_score_from_json(
     return score
 
 
-def fetch_player_match_score(player_id):
-    player_json = get_dota_open_api('api/players/{}'.format(player_id))
-    week_json = get_dota_open_api('api/players/{}/wl'.format(player_id), params={'date': 7})
-    month_json = get_dota_open_api('api/players/{}/wl'.format(player_id), params={'date': 30})
-    year_json = get_dota_open_api('api/players/{}/wl'.format(player_id), params={'date': 365})
-    overall_json = get_dota_open_api('api/players/{}/wl'.format(player_id))
+def fetch_player_match_score(player_id, func=get_dota_open_api):
+    player_json = func('api/players/{}'.format(player_id))
     if player_json is None:
         app.logger.warning("Missing player json for {}".format(player_id))
         return None
+    week_json = func('api/players/{}/wl'.format(player_id), params={'date': 7})
     if week_json is None:
         app.logger.warning("Missing week json for {}".format(player_id))
         return None
+    month_json = func('api/players/{}/wl'.format(player_id), params={'date': 30})
     if month_json is None:
         app.logger.warning("Missing month json for {}".format(player_id))
         return None
+    year_json = func('api/players/{}/wl'.format(player_id), params={'date': 365})
     if year_json is None:
         app.logger.warning("Missing year json for {}".format(player_id))
         return None
+    overall_json = func('api/players/{}/wl'.format(player_id))
     if overall_json is None:
-        app.logger.warning("Missing overall json for {}".format(player_id))
+        app.logger.warning("missing overall json for {}".format(player_id))
         return None
     return get_match_score_from_json(
         player_json,
@@ -100,42 +100,41 @@ def fetch_player_match_score(player_id):
 
 
 def get_player_match_scores(player_id_list):
-    player_list = MatchScore.query \
+    player_score_list = MatchScore.query \
         .filter(MatchScore.score_date == date.today()) \
         .filter(MatchScore.account_id.in_(player_id_list)) \
         .order_by(MatchScore.overall_score.desc()) \
         .all()
-    if len(player_list) == len(player_id_list):
-        return player_list
+    if len(player_score_list) == len(player_id_list):
+        return player_score_list
     # only fetch from API if id is not in database
-    player_id_list = set(player_id_list) - set([p.account_id for p in player_list])
-    app.logger.info("load from API for " + str(player_id_list))
+    player_id_list = set(player_id_list) - set([p.account_id for p in player_score_list])
+    app.logger.info("load match score from API for " + str(player_id_list))
     for player_id in player_id_list:
         score = fetch_player_match_score(player_id)
         if score is None:
-            app.logger.warning("Missing score data for {}".format(player_id))
+            app.logger.warning("missing score data for {}".format(player_id))
             continue
         # save to db
         db.session.add(score)
         db.session.commit()
         # add to list
-        player_list.append(score)
-    return player_list
+        player_score_list.append(score)
+    return player_score_list
 
 
 def get_player_match_score_by_id(player_id):
-    player = MatchScore.query\
+    score = MatchScore.query\
         .filter(MatchScore.account_id == player_id) \
         .order_by(MatchScore.score_date.desc()) \
         .first()
-    if player is None:
-        app.logger.info("load from API for " + str(player_id))
-        score = fetch_player_match_score(player_id)
-        if score is None:
-            return None
-        # save to db
-        db.session.add(score)
-        db.session.commit()
-        # set player
-        player = score.player
-    return player
+    if score is not None:
+        return score
+    app.logger.info("load match score from API for " + str(player_id))
+    score = fetch_player_match_score(player_id)
+    if score is None:
+        return None
+    # save to db
+    db.session.add(score)
+    db.session.commit()
+    return score

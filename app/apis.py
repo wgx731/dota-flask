@@ -18,5 +18,5 @@ def get_dota_open_api(path, base_url='https://api.opendota.com', params=None):
             return None
         return req.read()
     except URLError as e:
-        app.logger.error(e)
+        app.logger.warning(e)
         return None

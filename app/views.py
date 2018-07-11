@@ -8,7 +8,7 @@ from flask import request, abort, render_template, jsonify
 @app.errorhandler(404)
 @app.errorhandler(500)
 def error(e):
-    app.logger.error("error occurred: %s" % e)
+    app.logger.warning("error occurred: %s" % e)
     try:
         code = e.code
         return render_template(
@@ -16,7 +16,7 @@ def error(e):
             message=str(e)
         ), code
     except Exception as e:
-        app.logger.error('exception is %s' % e)
+        app.logger.warning('exception is %s' % e)
         return render_template(
             'error.html',
             message='unknown error.'
