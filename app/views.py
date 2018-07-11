@@ -15,7 +15,6 @@ def leader_board():
         return abort(400)
     score_list = get_player_match_scores(player_id_list)
     if len(score_list) == 0:
-        # TODO: add fetch from API here
         return abort(404)
     try:
         sort_by = request.args.get("sort").upper()
@@ -43,11 +42,9 @@ def compare_players():
         return abort(400)
     s1 = get_player_match_score_by_id(p1)
     if s1 is None:
-        # TODO: add fetch from API here
         return abort(404)
     s2 = get_player_match_score_by_id(p2)
     if s2 is None:
-        # TODO: add fetch from API here
         return abort(404)
     compare_result = s1.get_compare_score() - s2.get_compare_score()
     if accept_json(request):

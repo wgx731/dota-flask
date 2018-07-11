@@ -105,12 +105,13 @@ def get_player_match_scores(player_id_list):
         .filter(MatchScore.account_id.in_(player_id_list)) \
         .order_by(MatchScore.overall_score.desc()) \
         .all()
-    if len(player_list) > 0:
+    if len(player_list) == len(player_id_list):
         return player_list
     app.logger.info("load from API for " + str(player_id_list))
     for player_id in player_id_list:
         score = fetch_player_match_score(player_id)
         if score is None:
+            app.logger.warning("Missing score data for {}".format(player_id))
             continue
         # save to db
         db.session.add(score)
