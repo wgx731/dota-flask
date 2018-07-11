@@ -124,7 +124,10 @@ def get_player_match_scores(player_id_list):
 
 
 def get_player_match_score_by_id(player_id):
-    player = MatchScore.query.filter(MatchScore.account_id == player_id).first()
+    player = MatchScore.query\
+        .filter(MatchScore.account_id == player_id) \
+        .order_by(MatchScore.score_date.desc()) \
+        .first()
     if player is None:
         app.logger.info("load from API for " + str(player_id))
         score = fetch_player_match_score(player_id)
