@@ -1,6 +1,9 @@
+import json
 from datetime import date
+
 from app import app
-from app.models import MatchScore
+from app.models import Player, MatchScore
+from app.apis import get_dota_open_api
 
 
 def accept_json(request):
@@ -24,16 +27,96 @@ def sort_score_list(score_list, sort_by):
         return sorted(score_list, key=lambda s: s.overall_score, reverse=True)
 
 
+def get_match_score_from_json(
+        player_json,
+        week_json,
+        month_json,
+        year_json,
+        overall_json
+):
+    p_dict = json.loads(player_json)
+    w_dict = json.loads(week_json)
+    m_dict = json.loads(month_json)
+    y_dict = json.loads(year_json)
+    o_dict = json.loads(overall_json)
+    player = Player(
+        account_id=p_dict['profile']['account_id'],
+        steam_id=p_dict['profile']['steamid'],
+        personaname=p_dict['profile']['personaname'],
+        name=p_dict['profile']['name'],
+        avatar=p_dict['profile']['avatar']
+    )
+    score = MatchScore(
+        player=player
+    )
+    if w_dict['lose'] == 0:
+        score.week_score = 0.0
+    else:
+        score.week_score = w_dict['win'] / w_dict['lose']
+    if m_dict['lose'] == 0:
+        score.month_score = 0.0
+    else:
+        score.month_score = m_dict['win'] / m_dict['lose']
+    if y_dict['lose'] == 0:
+        score.year_score = 0.0
+    else:
+        score.year_score = y_dict['win'] / y_dict['lose']
+    if o_dict['lose'] == 0:
+        score.overall_score = 0.0
+    else:
+        score.overall_score = o_dict['win'] / o_dict['lose']
+    score.overall_count = o_dict['win'] + o_dict['lose']
+    return score
+
+
+def fetch_player_match_score(player_id):
+    player_json = get_dota_open_api('api/players/{}'.format(player_id))
+    week_json = get_dota_open_api('api/players/{}/wl'.format(player_id), params={'date': 7})
+    month_json = get_dota_open_api('api/players/{}/wl'.format(player_id), params={'date': 30})
+    year_json = get_dota_open_api('api/players/{}/wl'.format(player_id), params={'date': 365})
+    overall_json = get_dota_open_api('api/players/{}/wl'.format(player_id))
+    if player_json is None:
+        app.logger.warning("Missing player json for {}".format(player_id))
+        return None
+    if week_json is None:
+        app.logger.warning("Missing week json for {}".format(player_id))
+        return None
+    if month_json is None:
+        app.logger.warning("Missing month json for {}".format(player_id))
+        return None
+    if year_json is None:
+        app.logger.warning("Missing year json for {}".format(player_id))
+        return None
+    if overall_json is None:
+        app.logger.warning("Missing overall json for {}".format(player_id))
+        return None
+    return get_match_score_from_json(
+        player_json,
+        week_json,
+        month_json,
+        year_json,
+        overall_json
+    )
+
+
 def get_player_match_scores(player_id_list):
-    player_list = MatchScore.query\
-            .filter(MatchScore.score_date == date.today())\
-            .filter(MatchScore.account_id.in_(player_id_list))\
-            .order_by(MatchScore.overall_score.desc())\
-            .all()
+    player_list = MatchScore.query \
+        .filter(MatchScore.score_date == date.today()) \
+        .filter(MatchScore.account_id.in_(player_id_list)) \
+        .order_by(MatchScore.overall_score.desc()) \
+        .all()
     if len(player_list) > 0:
         return player_list
-    # TODO: add fetch from API here
     app.logger.info("load from API for " + str(player_id_list))
+    for player_id in player_id_list:
+        score = fetch_player_match_score(player_id)
+        if score is None:
+            continue
+        # save to db
+        app.db.session.add(score)
+        app.db.session.commit()
+        # add to list
+        player_list.add(score)
     return player_list
 
 
@@ -41,5 +124,12 @@ def get_player_match_score_by_id(player_id):
     player = MatchScore.query.filter(MatchScore.account_id == player_id).first()
     if player is None:
         app.logger.info("load from API for " + str(player_id))
-        # TODO: add fetch from API here
+        score = fetch_player_match_score(player_id)
+        if score is None:
+            return None
+        # save to db
+        app.db.session.add(score)
+        app.db.session.commit()
+        # set player
+        player = score.player
     return player
