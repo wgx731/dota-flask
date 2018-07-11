@@ -1,7 +1,7 @@
 import json
 from datetime import date
 
-from app import app
+from app import app, db
 from app.models import Player, MatchScore
 from app.apis import get_dota_open_api
 
@@ -113,8 +113,8 @@ def get_player_match_scores(player_id_list):
         if score is None:
             continue
         # save to db
-        app.db.session.add(score)
-        app.db.session.commit()
+        db.session.add(score)
+        db.session.commit()
         # add to list
         player_list.add(score)
     return player_list
@@ -128,8 +128,8 @@ def get_player_match_score_by_id(player_id):
         if score is None:
             return None
         # save to db
-        app.db.session.add(score)
-        app.db.session.commit()
+        db.session.add(score)
+        db.session.commit()
         # set player
         player = score.player
     return player
