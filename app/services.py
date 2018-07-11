@@ -1,4 +1,5 @@
 from datetime import date
+from app import app
 from app.models import MatchScore
 
 
@@ -32,8 +33,13 @@ def get_player_match_scores(player_id_list):
     if len(player_list) > 0:
         return player_list
     # TODO: add fetch from API here
+    app.logger.info("load from API for " + str(player_id_list))
     return player_list
 
 
 def get_player_match_score_by_id(player_id):
-    return MatchScore.query.filter(MatchScore.account_id == player_id).first()
+    player = MatchScore.query.filter(MatchScore.account_id == player_id).first()
+    if player is None:
+        app.logger.info("load from API for " + str(player_id))
+        # TODO: add fetch from API here
+    return player

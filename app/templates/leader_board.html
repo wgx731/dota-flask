@@ -1,32 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="row column">
     <table>
         <thead>
-            <tr>
-                <th>account id</th>
-                <th>steam id</th>
-                <th>name</th>
-                <th>last week score</th>
-                <th>last month score</th>
-                <th>last year score</th>
-                <th>overall score</th>
-                <th>date</th>
-            </tr>
+        <tr>
+            <th>account id</th>
+            <th>steam id</th>
+            <th>name</th>
+            <th>last week score</th>
+            <th>last month score</th>
+            <th>last year score</th>
+            <th>overall score</th>
+            <th>overall count</th>
+            <th>date</th>
+        </tr>
         </thead>
         <tbody>
-            {% for score in scores %}
-                <tr>
-                    <td>{{score.player.account_id}}</td>
-                    <td>{{score.player.steam_id}}</td>
-                    <td>{{score.player.name}}</td>
-                    <td>{{score.week_score}}</td>
-                    <td>{{score.month_score}}</td>
-                    <td>{{score.year_score}}</td>
-                    <td>{{score.overall_score}}</td>
-                    <td>{{score.overall_count}}</td>
-                    <td>{{score.score_date}}</td>
-                </tr>
-            {% endfor %}
+        {% for score in scores %}
+        <tr>
+            <td>{{score.player.account_id}}</td>
+            <td>{{score.player.steam_id}}</td>
+            <td>{{score.player.name}}</td>
+            <td>{{score.week_score}}</td>
+            <td>{{score.month_score}}</td>
+            <td>{{score.year_score}}</td>
+            <td>{{score.overall_score}}</td>
+            <td>{{score.overall_count}}</td>
+            <td>{{score.score_date}}</td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}
