@@ -75,7 +75,7 @@ def compare_players():
     else:
         return render_template(
             'compare_players.html',
-            title='Compare {} with {}'.format(s1.player.name, s2.player.name),
+            title='Compare {} with {}'.format(s1.player.account_id, s2.player.account_id),
             result=compare_result,
             s1=s1,
             s2=s2

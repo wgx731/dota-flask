@@ -29,16 +29,16 @@ class ServiceTest(unittest.TestCase):
         self.assertEqual(score.player.account_id, 1)
         score = get_match_score_from_json(
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
-            '{"win":1,"lose":2}',
+            '{"win":1,"lose":3}',
             '{"win":1,"lose":1}',
-            '{"win":1,"lose":5}',
-            '{"win":10,"lose":100}'
+            '{"win":1,"lose":0}',
+            '{"win":10,"lose":90}'
         )
-        self.assertEqual(score.week_score, 0.5)
-        self.assertEqual(score.month_score, 1.0)
-        self.assertEqual(score.year_score, 0.2)
+        self.assertEqual(score.week_score, 0.25)
+        self.assertEqual(score.month_score, 0.5)
+        self.assertEqual(score.year_score, 1.0)
         self.assertEqual(score.overall_score, 0.1)
-        self.assertEqual(score.overall_count, 110)
+        self.assertEqual(score.overall_count, 100)
         self.assertEqual(score.player.account_id, 1)
 
     def test_fetch_player_match_score(self):

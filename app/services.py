@@ -49,23 +49,27 @@ def get_match_score_from_json(
     score = MatchScore(
         player=player
     )
-    if w_dict['lose'] == 0:
+    w_total = w_dict['win'] + w_dict['lose']
+    if w_total == 0:
         score.week_score = 0.0
     else:
-        score.week_score = w_dict['win'] / w_dict['lose']
-    if m_dict['lose'] == 0:
+        score.week_score = w_dict['win'] / w_total
+    m_total = m_dict['win'] + m_dict['lose']
+    if m_total == 0:
         score.month_score = 0.0
     else:
-        score.month_score = m_dict['win'] / m_dict['lose']
-    if y_dict['lose'] == 0:
+        score.month_score = m_dict['win'] / m_total
+    y_total = y_dict['win'] + y_dict['lose']
+    if y_total == 0:
         score.year_score = 0.0
     else:
-        score.year_score = y_dict['win'] / y_dict['lose']
-    if o_dict['lose'] == 0:
+        score.year_score = y_dict['win'] / y_total
+    o_total = o_dict['win'] + o_dict['lose']
+    if o_total == 0:
         score.overall_score = 0.0
     else:
-        score.overall_score = o_dict['win'] / o_dict['lose']
-    score.overall_count = o_dict['win'] + o_dict['lose']
+        score.overall_score = o_dict['win'] / o_total
+    score.overall_count = o_total
     return score
 
 
