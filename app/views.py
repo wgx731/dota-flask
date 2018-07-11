@@ -4,6 +4,27 @@ from app.services import get_player_match_scores, accept_json,\
 from flask import request, abort, render_template, jsonify
 
 
+@app.errorhandler(400)
+@app.errorhandler(404)
+@app.errorhandler(500)
+def error(e):
+    app.logger.error("error occurred: %s" % e)
+    try:
+        return render_template(
+            'error.html',
+            code=e.code,
+            message=str(e)
+        )
+    except Exception as e:
+        app.logger.error('exception is %s' % e)
+    finally:
+        return render_template(
+            'error.html',
+            code=500,
+            message='unknown error.'
+        )
+
+
 @app.route('/leaderboard', methods=['GET'])
 def leader_board():
     try:
