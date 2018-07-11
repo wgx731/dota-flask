@@ -4,6 +4,7 @@
     <table>
         <thead>
         <tr>
+            <th>avatar</th>
             <th>account id</th>
             <th>steam id</th>
             <th>name</th>
@@ -18,6 +19,7 @@
         <tbody>
         {% for score in scores %}
         <tr>
+            <td><img src="{{score.player.avatar}}"/></td>
             <td>{{score.player.account_id}}</td>
             <td>{{score.player.steam_id}}</td>
             <td>{{score.player.name}}</td>
