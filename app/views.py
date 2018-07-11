@@ -10,6 +10,7 @@ from flask import request, abort, render_template, jsonify
 def error(e):
     app.logger.error("error occurred: %s" % e)
     try:
+        print(e.code)
         return render_template(
             'error.html',
             code=e.code,
