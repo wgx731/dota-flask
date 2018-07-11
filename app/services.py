@@ -116,7 +116,7 @@ def get_player_match_scores(player_id_list):
         db.session.add(score)
         db.session.commit()
         # add to list
-        player_list.add(score)
+        player_list.append(score)
     return player_list
 
 
