@@ -144,10 +144,10 @@ class MatchScore(db.Model):
         }
 
     def get_compare_score(self):
-        max_count = MatchScore.qeury.order_by(HeroScore.overall_score.desc()).first().overall_count
+        max_count = MatchScore.query.order_by(MatchScore.overall_score.desc()).first().overall_count
         return (float(self.overall_count) / max_count) * 0.8 \
-               + self.week_score * 0.1 + self.month_score * 0.05 \
-               + self.year_score * 0.05
+            + self.week_score * 0.1 + self.month_score * 0.05 \
+            + self.year_score * 0.05
 
     def __repr__(self):
         return '<Match Score %r>' % self.overall_score

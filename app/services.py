@@ -32,20 +32,25 @@ def get_match_score_from_json(
         week_json,
         month_json,
         year_json,
-        overall_json
+        overall_json,
+        player_id
 ):
-    p_dict = json.loads(player_json)
     w_dict = json.loads(week_json)
     m_dict = json.loads(month_json)
     y_dict = json.loads(year_json)
     o_dict = json.loads(overall_json)
-    player = Player(
-        account_id=p_dict['profile']['account_id'],
-        steam_id=p_dict['profile']['steamid'],
-        personaname=p_dict['profile']['personaname'],
-        name=p_dict['profile']['name'],
-        avatar=p_dict['profile']['avatar']
-    )
+    player = Player.query.filter(Player.account_id == player_id).first()
+    if player is None:
+        p_dict = json.loads(player_json)
+        player = Player(
+            account_id=p_dict['profile']['account_id'],
+            steam_id=p_dict['profile']['steamid'],
+            personaname=p_dict['profile']['personaname'],
+            name=p_dict['profile']['name'],
+            avatar=p_dict['profile']['avatar']
+        )
+        db.session.add(player)
+        db.session.commit()
     score = MatchScore(
         player=player
     )
@@ -99,7 +104,8 @@ def fetch_player_match_score(player_id, func=get_dota_open_api):
         week_json,
         month_json,
         year_json,
-        overall_json
+        overall_json,
+        player_id
     )
 
 

@@ -1,8 +1,8 @@
 import unittest
 import os
 import logging
-from datetime import date
 from unittest.mock import Mock
+from datetime import date
 from app import app, db, default_db_path, default_db_uri
 from app.models import Player, MatchScore
 from app.services import get_match_score_from_json, fetch_player_match_score
@@ -13,13 +13,27 @@ app.logger.setLevel(logging.ERROR)
 
 class ServiceTest(unittest.TestCase):
 
+    def setUp(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = \
+            default_db_uri.replace("local", "service_test")
+        app.testing = True
+        with app.app_context():
+            db.drop_all()
+            db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        os.unlink(default_db_path.replace("local", "service_test"))
+
     def test_get_match_score_from_json(self):
         score = get_match_score_from_json(
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
             '{"win":0,"lose":0}',
             '{"win":0,"lose":0}',
             '{"win":0,"lose":0}',
-            '{"win":0,"lose":0}'
+            '{"win":0,"lose":0}',
+            1
         )
         self.assertEqual(score.week_score, 0)
         self.assertEqual(score.month_score, 0)
@@ -32,13 +46,14 @@ class ServiceTest(unittest.TestCase):
             '{"win":1,"lose":3}',
             '{"win":1,"lose":1}',
             '{"win":1,"lose":0}',
-            '{"win":10,"lose":90}'
+            '{"win":10,"lose":90}',
+            1
         )
         self.assertEqual(score.week_score, 0.25)
         self.assertEqual(score.month_score, 0.5)
         self.assertEqual(score.year_score, 1.0)
         self.assertEqual(score.overall_score, 0.1)
-        self.assertEqual(score.overall_count, 100)
+        self.assertEqual(score.overall_count, 10)
         self.assertEqual(score.player.account_id, 1)
 
     def test_fetch_player_match_score(self):
@@ -49,7 +64,7 @@ class ServiceTest(unittest.TestCase):
             '{"win":0,"lose":0}',
             '{"win":0,"lose":0}'
         ])
-        self.assertIsNotNone(fetch_player_match_score([1], mock))
+        self.assertIsNotNone(fetch_player_match_score(1, mock))
         mock = Mock(side_effect=[
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
             '{"win":0,"lose":0}',
@@ -57,36 +72,36 @@ class ServiceTest(unittest.TestCase):
             '{"win":0,"lose":0}',
             None
         ])
-        self.assertIsNone(fetch_player_match_score([1], mock))
+        self.assertIsNone(fetch_player_match_score(1, mock))
         mock = Mock(side_effect=[
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
             '{"win":0,"lose":0}',
             '{"win":0,"lose":0}',
             None
         ])
-        self.assertIsNone(fetch_player_match_score([1], mock))
+        self.assertIsNone(fetch_player_match_score(1, mock))
         mock = Mock(side_effect=[
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
             '{"win":0,"lose":0}',
             None
         ])
-        self.assertIsNone(fetch_player_match_score([1], mock))
+        self.assertIsNone(fetch_player_match_score(1, mock))
         mock = Mock(side_effect=[
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
             None
         ])
-        self.assertIsNone(fetch_player_match_score([1], mock))
+        self.assertIsNone(fetch_player_match_score(1, mock))
         mock = Mock(side_effect=[
             None
         ])
-        self.assertIsNone(fetch_player_match_score([1], mock))
+        self.assertIsNone(fetch_player_match_score(1, mock))
 
 
-class DotaFlaskTest(unittest.TestCase):
+class ViewTest(unittest.TestCase):
 
     def setUp(self):
         app.config['SQLALCHEMY_DATABASE_URI'] = \
-            default_db_uri.replace("local", "test")
+            default_db_uri.replace("local", "view_test")
         app.testing = True
         self.app = app.test_client()
         with app.app_context():
@@ -94,8 +109,9 @@ class DotaFlaskTest(unittest.TestCase):
             db.create_all()
 
     def tearDown(self):
+        db.session.remove()
         db.drop_all()
-        os.unlink(default_db_path.replace("local", "test"))
+        os.unlink(default_db_path.replace("local", "view_test"))
         del self.app
 
     def __clean_test_data(self):
@@ -136,8 +152,8 @@ class DotaFlaskTest(unittest.TestCase):
             overall_score=0.4313,
             player=self.p2
         )
-        db.session.add(self.p1)
-        db.session.add(self.p2)
+        db.session.add(self.s1)
+        db.session.add(self.s2)
         db.session.commit()
 
     def test_leader_board(self):
@@ -195,7 +211,7 @@ class DotaFlaskTest(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertIn(b'player1', result.data)
         self.assertIn(b'player2', result.data)
-        self.assertIn(b'-0.00030253599999999214', result.data)
+        self.assertIn(b'-7.2', result.data)
         # clean up
         self.__clean_test_data()
 
