@@ -145,7 +145,7 @@ class DotaFlaskTest(unittest.TestCase):
         self.__setup_test_data()
         # test model
         self.assertEqual(str(self.p1), 'Player - id: 1 name: player1 avatar: p1.jpg')
-        self.assertEqual(str(self.s2), 'Score - id: 2 date: ' + str(date.today()) + ' \
+        self.assertEqual(str(self.s2), 'Match Score - player id: 2 date: ' + str(date.today()) + ' \
                 week: 0.6 month: 0.5 year: 0.2 overall: 0.4313')
         # test wrong id
         result = self.app.get('/leaderboard?ids=d')

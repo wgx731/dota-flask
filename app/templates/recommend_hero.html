@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row column">
+        <h5>{{score.player.account_id}}</h5>
+        <img src="{{score.player.avatar}}"/>
+        <ul>
+            <li>hero name: {{score.hero.name}}</li>
+            <li>hero localized name: {{score.hero.localized_name}}</li>
+            <li>hero primary attr: {{score.hero.primary_attr}}</li>
+            <li>hero attack type: {{score.hero.attack_type}}</li>
+            <li>hero roles: {{score.hero.roles}}</li>
+            <li>hero legs: {{score.hero.legs}}</li>
+            <li>hero rank score: {{score.rank_score}}</li>
+            <li>hero win score: {{score.win_score}}</li>
+            <li>hero last played score: {{score.last_played_score}}</li>
+        </ul>
+</div>
+<div class="row column text-center">
+    <p class="callout small secondary">Recommend Engine Formula: rank_score * 0.5 + normalized_win_score * 0.45 + normalized_last_played_score * 0.05</p>
+</div>
+{% endblock %}

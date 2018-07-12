@@ -2,7 +2,7 @@ import json
 from datetime import date
 
 from app import app, db
-from app.models import Player, MatchScore
+from app.models import Player, MatchScore, HeroScore, Hero
 from app.apis import get_dota_open_api
 
 
@@ -106,13 +106,13 @@ def fetch_player_match_score(player_id, func=get_dota_open_api):
 def get_player_match_scores(player_id_list):
     player_score_list = MatchScore.query \
         .filter(MatchScore.score_date == date.today()) \
-        .filter(MatchScore.account_id.in_(player_id_list)) \
+        .filter(MatchScore.player_id.in_(player_id_list)) \
         .order_by(MatchScore.overall_score.desc()) \
         .all()
     if len(player_score_list) == len(player_id_list):
         return player_score_list
     # only fetch from API if id is not in database
-    player_id_list = set(player_id_list) - set([p.account_id for p in player_score_list])
+    player_id_list = set(player_id_list) - set([p.player_id for p in player_score_list])
     app.logger.info("load match score from API for " + str(player_id_list))
     for player_id in player_id_list:
         score = fetch_player_match_score(player_id)
@@ -129,8 +129,8 @@ def get_player_match_scores(player_id_list):
 
 def get_player_match_score_by_id(player_id):
     score = MatchScore.query\
-        .filter(MatchScore.account_id == player_id) \
-        .order_by(MatchScore.score_date.desc()) \
+        .filter(MatchScore.player_id == player_id)\
+        .order_by(MatchScore.score_date.desc())\
         .first()
     if score is not None:
         return score
@@ -142,3 +142,110 @@ def get_player_match_score_by_id(player_id):
     db.session.add(score)
     db.session.commit()
     return score
+
+
+def populate_player_hero_scores_from_json(
+        hero_ranking_json,
+        hero_match_json,
+        heroes_json,
+        player_json,
+        player_id
+):
+    hs_dict = {}
+    for h in json.loads(heroes_json):
+        hs_dict[h['id']] = h
+    hm_dict = {}
+    for hm in json.loads(hero_match_json):
+        hm_dict[hm['hero_id']] = hm
+    hr_dict = {}
+    for hr in json.loads(hero_ranking_json):
+        hr_dict[hr['hero_id']] = hr
+    player = Player.query.filter(Player.account_id == player_id).first()
+    if player is None:
+        p_dict = json.loads(player_json)
+        player = Player(
+            account_id=p_dict['profile']['account_id'],
+            steam_id=p_dict['profile']['steamid'],
+            personaname=p_dict['profile']['personaname'],
+            name=p_dict['profile']['name'],
+            avatar=p_dict['profile']['avatar']
+        )
+        db.session.add(player)
+        db.session.commit()
+    for hero_id in hs_dict.keys():
+        hero = Hero.query.filter(Hero.hero_id == hero_id).first()
+        if hero is None:
+            hero = Hero(
+                hero_id=hero_id,
+                name=hs_dict[hero_id]['name'],
+                localized_name=hs_dict[hero_id]['localized_name'],
+                primary_attr=hs_dict[hero_id]['primary_attr'],
+                attack_type=hs_dict[hero_id]['attack_type'],
+                roles=",".join(hs_dict[hero_id]['roles']),
+                legs=hs_dict[hero_id]['legs']
+            )
+            db.session.add(hero)
+            db.session.commit()
+        hero_score = HeroScore(
+            player=player,
+            hero=hero
+        )
+        if hero_id not in hm_dict:
+            hero_score.last_played_score = 0.0
+            hero_score.win_score = 0.0
+        else:
+            last_played = hm_dict[hero_id]['last_played']
+            hero_score.last_played_score = last_played / (10 ** len(str(last_played)))
+            win = hm_dict[hero_id]['win']
+            hero_score.win_score = win / (10 ** len(str(win)))
+        if hero_id not in hr_dict:
+            hero_score.rank_score = 0.0
+        else:
+            hero_score.rank_score = hr_dict[hero_id]['percent_rank']
+        hero_score.overall_score = hero_score.get_overall_score()
+        db.session.add(hero_score)
+        db.session.commit()
+
+
+def fetch_player_hero_scores(player_id, func=get_dota_open_api):
+    hero_ranking_json = func('api/players/{}/rankings'.format(player_id))
+    if hero_ranking_json is None:
+        app.logger.warning("missing hero ranking json for {}".format(player_id))
+        return None
+    hero_match_json = func('api/players/{}/heroes'.format(player_id))
+    if hero_match_json is None:
+        app.logger.warning("missing hero match json for {}".format(player_id))
+        return None
+    # TODO: lazy load heroes data and player data
+    heroes_json = func('api/heroes')
+    if heroes_json is None:
+        app.logger.warning("missing heroes json")
+        return None
+    player_json = func('api/players/{}'.format(player_id))
+    if player_json is None:
+        app.logger.warning("Missing player json for {}".format(player_id))
+        return None
+    return populate_player_hero_scores_from_json(
+        hero_ranking_json,
+        hero_match_json,
+        heroes_json,
+        player_json,
+        player_id
+    )
+
+
+def get_player_hero_score_by_id(player_id):
+    score = HeroScore.query\
+        .filter(HeroScore.player_id == player_id) \
+        .order_by(HeroScore.score_date.desc()) \
+        .order_by(HeroScore.overall_score.desc())\
+        .first()
+    if score is not None:
+        return score
+    app.logger.info("load hero score from API for " + str(player_id))
+    fetch_player_hero_scores(player_id)
+    return HeroScore.query \
+        .filter(HeroScore.player_id == player_id) \
+        .order_by(HeroScore.score_date.desc()) \
+        .order_by(HeroScore.overall_score.desc()) \
+        .first()

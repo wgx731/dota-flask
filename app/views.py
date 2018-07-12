@@ -1,6 +1,6 @@
 from app import app
 from app.services import get_player_match_scores, accept_json,\
-    sort_score_list, get_player_match_score_by_id
+    sort_score_list, get_player_match_score_by_id, get_player_hero_score_by_id
 from flask import request, abort, render_template, jsonify
 
 
@@ -79,4 +79,24 @@ def compare_players():
             result=compare_result,
             s1=s1,
             s2=s2
+        )
+
+
+@app.route('/recommend', methods=['GET'])
+def recommend_hero():
+    try:
+        player_id = int(request.args.get("p"))
+    except (ValueError, AttributeError) as e:
+        app.logger.warning(e)
+        return abort(400)
+    s = get_player_hero_score_by_id(player_id)
+    if s is None:
+        return abort(404)
+    if accept_json(request):
+        return jsonify(s.hero)
+    else:
+        return render_template(
+            'recommend_hero.html',
+            title='Recommend Hero For {}'.format(player_id),
+            score=s
         )
