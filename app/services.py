@@ -53,22 +53,22 @@ def get_match_score_from_json(
     if w_total == 0:
         score.week_score = 0.0
     else:
-        score.week_score = w_dict['win'] / w_total
+        score.week_score = w_dict['win'] / float(w_total)
     m_total = m_dict['win'] + m_dict['lose']
     if m_total == 0:
         score.month_score = 0.0
     else:
-        score.month_score = m_dict['win'] / m_total
+        score.month_score = m_dict['win'] / float(m_total)
     y_total = y_dict['win'] + y_dict['lose']
     if y_total == 0:
         score.year_score = 0.0
     else:
-        score.year_score = y_dict['win'] / y_total
+        score.year_score = y_dict['win'] / float(y_total)
     o_total = o_dict['win'] + o_dict['lose']
     if o_total == 0:
         score.overall_score = 0.0
     else:
-        score.overall_score = o_dict['win'] / o_total
+        score.overall_score = o_dict['win'] / float(o_total)
     score.overall_count = o_total
     return score
 
@@ -154,12 +154,15 @@ def populate_player_hero_scores_from_json(
     hs_dict = {}
     for h in json.loads(heroes_json):
         hs_dict[h['id']] = h
+    app.logger.info("heroes dict: {}".format(hs_dict))
     hm_dict = {}
     for hm in json.loads(hero_match_json):
         hm_dict[hm['hero_id']] = hm
+    app.logger.info("hero match dict: {}".format(hm_dict))
     hr_dict = {}
     for hr in json.loads(hero_ranking_json):
         hr_dict[hr['hero_id']] = hr
+    app.logger.info("hero rank dict: {}".format(hm_dict))
     player = Player.query.filter(Player.account_id == player_id).first()
     if player is None:
         p_dict = json.loads(player_json)
@@ -195,9 +198,9 @@ def populate_player_hero_scores_from_json(
             hero_score.win_score = 0.0
         else:
             last_played = hm_dict[hero_id]['last_played']
-            hero_score.last_played_score = last_played / (10 ** len(str(last_played)))
+            hero_score.last_played_score = float(last_played) / (10 ** len(str(last_played)))
             win = hm_dict[hero_id]['win']
-            hero_score.win_score = win / (10 ** len(str(win)))
+            hero_score.win_score = float(win) / (10 ** len(str(win)))
         if hero_id not in hr_dict:
             hero_score.rank_score = 0.0
         else:
