@@ -157,7 +157,8 @@ def populate_player_hero_scores_from_json(
     app.logger.info("heroes dict: {}".format(hs_dict))
     hm_dict = {}
     for hm in json.loads(hero_match_json):
-        hm_dict[hm['hero_id']] = hm
+        # NOTE: in player hero API, hero_id is string type, wired! :(
+        hm_dict[int(hm['hero_id'])] = hm
     app.logger.info("hero match dict: {}".format(hm_dict))
     hr_dict = {}
     for hr in json.loads(hero_ranking_json):
