@@ -93,7 +93,7 @@ def recommend_hero():
     if s is None:
         return abort(404)
     if accept_json(request):
-        return jsonify(s.hero)
+        return jsonify(s.to_dict())
     else:
         return render_template(
             'recommend_hero.html',
