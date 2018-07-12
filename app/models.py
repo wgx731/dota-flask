@@ -72,10 +72,10 @@ class HeroScore(db.Model):
     __tablename__ = 'hero_score'
 
     hero_score_id = db.Column(db.Integer, primary_key=True)
-    rank_score = db.Column(db.Float)
-    last_played_score = db.Column(db.Float)
-    win_score = db.Column(db.Float)
-    overall_score = db.Column(db.Float, nullable=False)
+    rank_score = db.Column(db.Float(10))
+    last_played_score = db.Column(db.Float(10))
+    win_score = db.Column(db.Float(10))
+    overall_score = db.Column(db.Float(10), nullable=False)
     score_date = db.Column(db.Date, nullable=False,
                            default=date.today)
     player_id = db.Column(db.Integer, db.ForeignKey('player.account_id'),
@@ -119,10 +119,10 @@ class MatchScore(db.Model):
     __tablename__ = 'match_score'
 
     match_score_id = db.Column(db.Integer, primary_key=True)
-    week_score = db.Column(db.Float)
-    month_score = db.Column(db.Float)
-    year_score = db.Column(db.Float)
-    overall_score = db.Column(db.Float)
+    week_score = db.Column(db.Float(10))
+    month_score = db.Column(db.Float(10))
+    year_score = db.Column(db.Float(10))
+    overall_score = db.Column(db.Float(10))
     overall_count = db.Column(db.Integer)
     score_date = db.Column(db.Date, nullable=False,
                            default=date.today)
