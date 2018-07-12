@@ -69,7 +69,7 @@ def get_match_score_from_json(
         score.overall_score = 0.0
     else:
         score.overall_score = o_dict['win'] / float(o_total)
-    score.overall_count = o_total
+    score.overall_count = o_dict['win']
     return score
 
 
@@ -156,9 +156,15 @@ def populate_player_hero_scores_from_json(
         hs_dict[h['id']] = h
     app.logger.info("heroes dict: {}".format(hs_dict))
     hm_dict = {}
+    max_win = -1
+    max_last_played = -1
     for hm in json.loads(hero_match_json):
         # NOTE: in player hero API, hero_id is string type, wired! :(
         hm_dict[int(hm['hero_id'])] = hm
+        if max_win < hm['win']:
+            max_win = hm['win']
+        if max_last_played < hm['last_played']:
+            max_last_played = hm['last_played']
     app.logger.info("hero match dict: {}".format(hm_dict))
     hr_dict = {}
     for hr in json.loads(hero_ranking_json):
@@ -199,9 +205,9 @@ def populate_player_hero_scores_from_json(
             hero_score.win_score = 0.0
         else:
             last_played = hm_dict[hero_id]['last_played']
-            hero_score.last_played_score = float(last_played) / (10 ** len(str(last_played)))
+            hero_score.last_played_score = float(last_played) / max_last_played
             win = hm_dict[hero_id]['win']
-            hero_score.win_score = float(win) / (10 ** len(str(win)))
+            hero_score.win_score = float(win) / max_win
         if hero_id not in hr_dict:
             hero_score.rank_score = 0.0
         else:

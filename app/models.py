@@ -144,9 +144,8 @@ class MatchScore(db.Model):
         }
 
     def get_compare_score(self):
-        win_count = self.overall_score * self.overall_count
-        win_score = float(win_count) / (10 ** (len(str(win_count))))
-        return win_score * 0.8 \
+        max_count = MatchScore.qeury.order_by(HeroScore.overall_score.desc()).first().overall_count
+        return (float(self.overall_count) / max_count) * 0.8 \
                + self.week_score * 0.1 + self.month_score * 0.05 \
                + self.year_score * 0.05
 
