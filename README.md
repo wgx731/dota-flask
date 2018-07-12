@@ -1,11 +1,11 @@
-Dota Flask - Setup
+Dota Flask
 ========================
 
-## Idea Source (TODO: change to correct url)
+## Idea Source 
 
-[Dota](https://en.wikipedia.org/wiki/Jackal_(video_game)) as [Python Flask](http://flask.pocoo.org) tutorial :video_game:
+[Dota](https://en.wikipedia.org/wiki/Defense_of_the_Ancients) status check :video_game:
 
-![Image Of Dota](https://upload.wikimedia.org/wikipedia/zh/7/70/Jackal.png)
+![Image Of Dota](https://en.wikipedia.org/wiki/Defense_of_the_Ancients#/media/File:Dota75-loading-screen.png)
 
 ## Prerequisite
 
@@ -34,6 +34,7 @@ Dota Flask - Setup
 ### Build Flask App
 
 * `docker build -t dota-flask -f Dockerfile.local .`
+* `docker build -t dota-flask -f Dockerfile .` (only use this command for deployment)
 
 ### Database Utils
 
