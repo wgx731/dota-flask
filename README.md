@@ -5,7 +5,7 @@ Dota Flask
 
 [Dota](https://en.wikipedia.org/wiki/Defense_of_the_Ancients) status check :video_game:
 
-![Image Of Dota](https://en.wikipedia.org/wiki/Defense_of_the_Ancients#/media/File:Dota75-loading-screen.png)
+![Image Of Dota](https://upload.wikimedia.org/wikipedia/en/4/42/Dota75-loading-screen.png)
 
 ## Prerequisite
 
