@@ -63,7 +63,7 @@ sort supports 'o' - overall, 'c' - count, 'w' - week, 'y' - year_
 * [player api](https://docs.opendota.com/#tag/players%2Fpaths%2F~1players~1%7Baccount_id%7D%2Fget)
 * [player win lose api](https://docs.opendota.com/#tag/players%2Fpaths%2F~1players~1%7Baccount_id%7D~1wl%2Fget)
 
-#### Comparision
+#### Comparison
 
 ##### HTML example
 ```bash
