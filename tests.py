@@ -4,11 +4,113 @@ import logging
 from unittest.mock import Mock
 from datetime import date
 from app import app, db, default_db_path, default_db_uri
-from app.models import Player, MatchScore
+from app.models import Player, Hero, HeroScore, MatchScore
 from app.services import get_match_score_from_json, fetch_player_match_score
 
 
 app.logger.setLevel(logging.ERROR)
+
+
+class ModelTest(unittest.TestCase):
+
+    def setUp(self):
+        self.p = Player(
+            account_id=1,
+            steam_id='1',
+            personaname='p1',
+            name='player1',
+            avatar='p1.jpg'
+        )
+        self.h = Hero(
+            hero_id=1,
+            name='h1',
+            localized_name='hero1',
+            primary_attr='magic',
+            attack_type='fire',
+            roles='a,b,c',
+            legs=0
+        )
+        self.hs = HeroScore(
+            hero_score_id=1,
+            rank_score=0.1,
+            last_played_score=0.1,
+            win_score=0.1,
+            overall_score=0.1,
+            score_date=date.today(),
+            player_id=self.p.account_id,
+            hero_id=self.h.hero_id,
+            player=self.p,
+            hero=self.h
+        )
+        self.ms = MatchScore(
+            match_score_id=1,
+            week_score=0.1,
+            month_score=0.1,
+            year_score=0.1,
+            overall_score=0.1,
+            overall_count=10,
+            score_date=date.today(),
+            player_id=self.p.account_id,
+            player=self.p
+        )
+
+    def tearDown(self):
+        del self.hs
+        del self.ms
+        del self.p
+        del self.h
+
+    def test_player(self):
+        self.assertEqual(self.p.to_dict(), {
+            'account_id': 1,
+            'steam_id': '1',
+            'person_name': 'p1',
+            'name': 'player1',
+            'avatar_url': 'p1.jpg'
+        })
+        self.assertEqual(str(self.p), 'Player - id: 1 name: player1 avatar: p1.jpg')
+
+    def test_hero(self):
+        self.assertEqual(self.h.to_dict(), {
+            'hero_id': 1,
+            'name': 'h1',
+            'localized_name': 'hero1',
+            'primary_attr': 'magic',
+            'attack_type': 'fire',
+            'roles': 'a,b,c',
+            'legs': 0
+        })
+        self.assertEqual(str(self.h), 'Hero - id: 1 name: hero1 type: fire roles: a,b,c')
+
+    def test_hero_score(self):
+        self.assertEqual(self.hs.to_dict(), {
+            'hero_score_id': 1,
+            'rank_score': 0.1,
+            'last_played_score': 0.1,
+            'win_score': 0.1,
+            'overall_score': 0.1,
+            'score_date': str(date.today()),
+            'player': self.p.to_dict(),
+            'hero': self.h.to_dict()
+        })
+        self.assertEqual(self.hs.get_overall_score(), 0.1)
+        self.assertEqual(str(self.hs), 'Hero Score - hero id: 1 player id: 1 '
+                                       'overall score: 0.1 score date: {}'.format(str(date.today())))
+
+    def test_match_score(self):
+        self.assertEqual(self.ms.to_dict(), {
+            'match_score_id': 1,
+            'week_score': 0.1,
+            'month_score': 0.1,
+            'year_score': 0.1,
+            'overall_score': 0.1,
+            'overall_count': 10,
+            'score_date': str(date.today()),
+            'player': self.p.to_dict()
+        })
+        self.assertEqual(str(self.ms), 'Match Score - player id: {} date: {} '
+                                       'week: {} month: {} year: {} overall: {}'.format(
+            1, str(date.today()), 0.1, 0.1, 0.1, 0.1))
 
 
 class ServiceTest(unittest.TestCase):
@@ -159,10 +261,6 @@ class ViewTest(unittest.TestCase):
     def test_leader_board(self):
         # setup
         self.__setup_test_data()
-        # test model
-        self.assertEqual(str(self.p1), 'Player - id: 1 name: player1 avatar: p1.jpg')
-        self.assertEqual(str(self.s2), 'Match Score - player id: 2 date: ' + str(date.today()) + ' \
-                week: 0.6 month: 0.5 year: 0.2 overall: 0.4313')
         # test wrong id
         result = self.app.get('/leaderboard?ids=d')
         self.assertEqual(result.status_code, 400)

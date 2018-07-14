@@ -153,8 +153,7 @@ class MatchScore(db.Model):
         return '<Match Score %r>' % self.overall_score
 
     def __str__(self):
-        return 'Match Score - player id: {} date: {} \
-                week: {} month: {} year: {} overall: {}'.format(
+        return 'Match Score - player id: {} date: {} week: {} month: {} year: {} overall: {}'.format(
             self.player_id,
             self.score_date,
             self.week_score,
