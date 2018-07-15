@@ -265,3 +265,8 @@ def get_player_hero_score_by_id(player_id):
         .order_by(HeroScore.score_date.desc()) \
         .order_by(HeroScore.overall_score.desc()) \
         .first()
+
+
+def get_compare_result(s1, s2):
+    max_count = MatchScore.query.order_by(MatchScore.overall_score.desc()).first().overall_count
+    return s1.get_compare_score(max_count) - s2.get_compare_score(max_count)

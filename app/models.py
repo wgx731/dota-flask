@@ -143,8 +143,7 @@ class MatchScore(db.Model):
             'player': self.player.to_dict()
         }
 
-    def get_compare_score(self):
-        max_count = MatchScore.query.order_by(MatchScore.overall_score.desc()).first().overall_count
+    def get_compare_score(self, max_count):
         return (float(self.overall_count) / max_count) * 0.8 \
             + self.week_score * 0.1 + self.month_score * 0.05 \
             + self.year_score * 0.05

@@ -108,6 +108,7 @@ class ModelTest(unittest.TestCase):
             'score_date': str(date.today()),
             'player': self.p.to_dict()
         })
+        self.assertAlmostEqual(self.ms.get_compare_score(10), 0.82)
         self.assertEqual(str(self.ms), 'Match Score - player id: {} date: {} '
                                        'week: {} month: {} year: {} overall: {}'.format(
             1, str(date.today()), 0.1, 0.1, 0.1, 0.1))

@@ -1,6 +1,7 @@
 from app import app
 from app.services import get_player_match_scores, accept_json,\
-    sort_score_list, get_player_match_score_by_id, get_player_hero_score_by_id
+    sort_score_list, get_player_match_score_by_id, get_player_hero_score_by_id,\
+    get_compare_result
 from flask import request, abort, render_template, jsonify
 
 
@@ -65,7 +66,7 @@ def compare_players():
     s2 = get_player_match_score_by_id(p2)
     if s2 is None:
         return abort(404)
-    compare_result = s1.get_compare_score() - s2.get_compare_score()
+    compare_result = get_compare_result(s1, s2)
     if accept_json(request):
         return jsonify({
             'result': compare_result,
