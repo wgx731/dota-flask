@@ -39,6 +39,7 @@ def get_match_score_from_json(
     m_dict = json.loads(month_json)
     y_dict = json.loads(year_json)
     o_dict = json.loads(overall_json)
+    # TODO: player might not present when another client is accessing, need a lock here
     player = Player.query.filter(Player.account_id == player_id).first()
     if player is None:
         p_dict = json.loads(player_json)
@@ -176,6 +177,7 @@ def populate_player_hero_scores_from_json(
     for hr in json.loads(hero_ranking_json):
         hr_dict[hr['hero_id']] = hr
     app.logger.info("hero rank dict: {}".format(hm_dict))
+    # TODO: player might not present when another client is accessing, need a lock here
     player = Player.query.filter(Player.account_id == player_id).first()
     if player is None:
         p_dict = json.loads(player_json)
@@ -227,21 +229,21 @@ def fetch_player_hero_scores(player_id, func=get_dota_open_api):
     hero_ranking_json = func('api/players/{}/rankings'.format(player_id))
     if hero_ranking_json is None:
         app.logger.warning("missing hero ranking json for {}".format(player_id))
-        return None
+        return
     hero_match_json = func('api/players/{}/heroes'.format(player_id))
     if hero_match_json is None:
         app.logger.warning("missing hero match json for {}".format(player_id))
-        return None
+        return
     # TODO: lazy load heroes data and player data
     heroes_json = func('api/heroes')
     if heroes_json is None:
         app.logger.warning("missing heroes json")
-        return None
+        return
     player_json = func('api/players/{}'.format(player_id))
     if player_json is None:
         app.logger.warning("Missing player json for {}".format(player_id))
-        return None
-    return populate_player_hero_scores_from_json(
+        return
+    populate_player_hero_scores_from_json(
         hero_ranking_json,
         hero_match_json,
         heroes_json,

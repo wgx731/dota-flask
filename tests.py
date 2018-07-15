@@ -5,10 +5,18 @@ from unittest.mock import Mock
 from datetime import date
 from app import app, db, default_db_path, default_db_uri
 from app.models import Player, Hero, HeroScore, MatchScore
-from app.services import get_match_score_from_json, fetch_player_match_score
+from app.services import get_match_score_from_json, fetch_player_match_score, \
+    populate_player_hero_scores_from_json, fetch_player_hero_scores
 
 
 app.logger.setLevel(logging.ERROR)
+
+
+class APITest(unittest.TestCase):
+
+    @unittest.skip("TODO: add mock for request and test API")
+    def test_api(self):
+        self.fail("you shouldn't be here.")
 
 
 class ModelTest(unittest.TestCase):
@@ -60,7 +68,7 @@ class ModelTest(unittest.TestCase):
         del self.p
         del self.h
 
-    def test_player(self):
+    def test_player_and_hero(self):
         self.assertEqual(self.p.to_dict(), {
             'account_id': 1,
             'steam_id': '1',
@@ -161,6 +169,36 @@ class ServiceTest(unittest.TestCase):
 
     def test_fetch_player_match_score(self):
         mock = Mock(side_effect=[
+            None
+        ])
+        self.assertIsNone(fetch_player_match_score(1, mock))
+        mock = Mock(side_effect=[
+            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
+            None
+        ])
+        self.assertIsNone(fetch_player_match_score(1, mock))
+        mock = Mock(side_effect=[
+            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
+            '{"win":0,"lose":0}',
+            None
+        ])
+        self.assertIsNone(fetch_player_match_score(1, mock))
+        mock = Mock(side_effect=[
+            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
+            '{"win":0,"lose":0}',
+            '{"win":0,"lose":0}',
+            None
+        ])
+        self.assertIsNone(fetch_player_match_score(1, mock))
+        mock = Mock(side_effect=[
+            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
+            '{"win":0,"lose":0}',
+            '{"win":0,"lose":0}',
+            '{"win":0,"lose":0}',
+            None
+        ])
+        self.assertIsNone(fetch_player_match_score(1, mock))
+        mock = Mock(side_effect=[
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
             '{"win":0,"lose":0}',
             '{"win":0,"lose":0}',
@@ -168,36 +206,95 @@ class ServiceTest(unittest.TestCase):
             '{"win":0,"lose":0}'
         ])
         self.assertIsNotNone(fetch_player_match_score(1, mock))
-        mock = Mock(side_effect=[
+
+    def test_populate_player_hero_scores_from_json(self):
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 1) \
+            .order_by(HeroScore.score_date.desc()) \
+            .order_by(HeroScore.overall_score.desc()) \
+            .first()
+        self.assertIsNone(score)
+        populate_player_hero_scores_from_json(
+            '[{"hero_id": 1, "score": 4398.79441087885, "percent_rank": 0.9, "card": 954500}]',
+            '[{"hero_id":"1","last_played":9,"games":10,"win":9}]',
+            '[{"id":1,"name":"h1","localized_name":"hero1","primary_attr":"agi","attack_type":"fire",\
+            "roles":["Carry","Escape","Nuker"],"legs":2}]',
             '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
-            '{"win":0,"lose":0}',
-            '{"win":0,"lose":0}',
-            '{"win":0,"lose":0}',
-            None
-        ])
-        self.assertIsNone(fetch_player_match_score(1, mock))
+            1
+        )
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 1) \
+            .order_by(HeroScore.score_date.desc()) \
+            .order_by(HeroScore.overall_score.desc()) \
+            .first()
+        self.assertEqual(score.player.account_id, 1)
+        populate_player_hero_scores_from_json(
+            '[{"hero_id": 1, "score": 4398.79441087885, "percent_rank": 0.9, "card": 954500}]',
+            '[{"hero_id":"1","last_played":9,"games":10,"win":9}]',
+            '[{"id":2,"name":"h2","localized_name":"hero2","primary_attr":"agi","attack_type":"fire",\
+            "roles":["Carry","Escape","Nuker"],"legs":2}]',
+            '{"profile":{"account_id":2,"steamid":2,"personaname":"player2","name":"p2","avatar":"p2.jpg"}}',
+            2
+        )
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 2) \
+            .order_by(HeroScore.score_date.desc()) \
+            .order_by(HeroScore.overall_score.desc()) \
+            .first()
+        self.assertEqual(score.player.account_id, 2)
+
+    def test_fetch_player_hero_scores(self):
         mock = Mock(side_effect=[
-            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
-            '{"win":0,"lose":0}',
-            '{"win":0,"lose":0}',
             None
         ])
-        self.assertIsNone(fetch_player_match_score(1, mock))
+        fetch_player_hero_scores(1, mock)
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 1) \
+            .first()
+        self.assertIsNone(score)
         mock = Mock(side_effect=[
-            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
-            '{"win":0,"lose":0}',
+            '[{"hero_id": 1, "score": 4398.79441087885, "percent_rank": 0.9, "card": 954500}]',
             None
         ])
-        self.assertIsNone(fetch_player_match_score(1, mock))
+        fetch_player_hero_scores(1, mock)
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 1) \
+            .first()
+        self.assertIsNone(score)
         mock = Mock(side_effect=[
-            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}',
+            '[{"hero_id": 1, "score": 4398.79441087885, "percent_rank": 0.9, "card": 954500}]',
+            '[{"hero_id":"1","last_played":9,"games":10,"win":9}]',
             None
         ])
-        self.assertIsNone(fetch_player_match_score(1, mock))
+        fetch_player_hero_scores(1, mock)
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 1) \
+            .first()
+        self.assertIsNone(score)
         mock = Mock(side_effect=[
+            '[{"hero_id": 1, "score": 4398.79441087885, "percent_rank": 0.9, "card": 954500}]',
+            '[{"hero_id":"1","last_played":9,"games":10,"win":9}]',
+            '[{"id":1,"name":"h1","localized_name":"hero1","primary_attr":"agi","attack_type":"fire",\
+            "roles":["Carry","Escape","Nuker"],"legs":2}]',
             None
         ])
-        self.assertIsNone(fetch_player_match_score(1, mock))
+        fetch_player_hero_scores(1, mock)
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 1) \
+            .first()
+        self.assertIsNone(score)
+        mock = Mock(side_effect=[
+            '[{"hero_id": 1, "score": 4398.79441087885, "percent_rank": 0.9, "card": 954500}]',
+            '[{"hero_id":"1","last_played":9,"games":10,"win":9}]',
+            '[{"id":1,"name":"h1","localized_name":"hero1","primary_attr":"agi","attack_type":"fire",\
+            "roles":["Carry","Escape","Nuker"],"legs":2}]',
+            '{"profile":{"account_id":1,"steamid":1,"personaname":"player1","name":"p1","avatar":"p1.jpg"}}'
+        ])
+        fetch_player_hero_scores(1, mock)
+        score = HeroScore.query \
+            .filter(HeroScore.player_id == 1) \
+            .first()
+        self.assertIsNotNone(score)
 
 
 class ViewTest(unittest.TestCase):
@@ -220,8 +317,10 @@ class ViewTest(unittest.TestCase):
     def __clean_test_data(self):
         del self.p1
         del self.p2
-        del self.s1
-        del self.s2
+        del self.ms1
+        del self.ms2
+        del self.h1
+        del self.hs1
 
     def __setup_test_data(self):
         # setup
@@ -232,7 +331,7 @@ class ViewTest(unittest.TestCase):
             name="player1",
             avatar="p1.jpg"
         )
-        self.s1 = MatchScore(
+        self.ms1 = MatchScore(
             week_score=0.5,
             month_score=0.6,
             year_score=0.3,
@@ -247,7 +346,7 @@ class ViewTest(unittest.TestCase):
             name="player2",
             avatar="p2.jpg"
         )
-        self.s2 = MatchScore(
+        self.ms2 = MatchScore(
             week_score=0.6,
             month_score=0.5,
             year_score=0.2,
@@ -255,8 +354,30 @@ class ViewTest(unittest.TestCase):
             overall_score=0.4313,
             player=self.p2
         )
-        db.session.add(self.s1)
-        db.session.add(self.s2)
+        self.h1 = Hero(
+            hero_id=1,
+            name='h1',
+            localized_name='hero1',
+            primary_attr='magic',
+            attack_type='fire',
+            roles='a,b,c',
+            legs=0
+        )
+        self.hs1 = HeroScore(
+            hero_score_id=1,
+            rank_score=0.1,
+            last_played_score=0.1,
+            win_score=0.1,
+            overall_score=0.78,
+            score_date=date.today(),
+            player_id=self.p1.account_id,
+            hero_id=self.h1.hero_id,
+            player=self.p1,
+            hero=self.h1
+        )
+        db.session.add(self.ms1)
+        db.session.add(self.ms2)
+        db.session.add(self.hs1)
         db.session.commit()
 
     def test_leader_board(self):
@@ -296,7 +417,7 @@ class ViewTest(unittest.TestCase):
         # clean up
         self.__clean_test_data()
 
-    def test_compare(self):
+    def test_compare_players(self):
         # setup
         self.__setup_test_data()
         # test wrong p1
@@ -311,6 +432,20 @@ class ViewTest(unittest.TestCase):
         self.assertIn(b'player1', result.data)
         self.assertIn(b'player2', result.data)
         self.assertIn(b'-7.2', result.data)
+        # clean up
+        self.__clean_test_data()
+
+    def test_recommend_hero(self):
+        # setup
+        self.__setup_test_data()
+        # test wrong player id
+        result = self.app.get('/recommend?p=d')
+        self.assertEqual(result.status_code, 400)
+        # test correct player id
+        result = self.app.get('/recommend?p=1')
+        self.assertEqual(result.status_code, 200)
+        self.assertIn(b'hero1', result.data)
+        self.assertIn(b'0.78', result.data)
         # clean up
         self.__clean_test_data()
 
