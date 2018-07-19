@@ -76,7 +76,10 @@ class ModelTest(unittest.TestCase):
             'name': 'player1',
             'avatar_url': 'p1.jpg'
         })
-        self.assertEqual(str(self.p), 'Player - id: 1 name: player1 avatar: p1.jpg')
+        self.assertEqual(
+            str(self.p),
+            'Player - id: 1 name: player1 avatar: p1.jpg'
+        )
 
     def test_hero(self):
         self.assertEqual(self.h.to_dict(), {
@@ -88,7 +91,10 @@ class ModelTest(unittest.TestCase):
             'roles': 'a,b,c',
             'legs': 0
         })
-        self.assertEqual(str(self.h), 'Hero - id: 1 name: hero1 type: fire roles: a,b,c')
+        self.assertEqual(
+            str(self.h),
+            'Hero - id: 1 name: hero1 type: fire roles: a,b,c'
+        )
 
     def test_hero_score(self):
         self.assertEqual(self.hs.to_dict(), {
@@ -102,8 +108,11 @@ class ModelTest(unittest.TestCase):
             'hero': self.h.to_dict()
         })
         self.assertEqual(self.hs.get_overall_score(), 0.1)
-        self.assertEqual(str(self.hs), 'Hero Score - hero id: 1 player id: 1 '
-                                       'overall score: 0.1 score date: {}'.format(str(date.today())))
+        self.assertEqual(
+            str(self.hs),
+            'Hero Score - hero id: 1 player id: 1 '
+            'overall score: 0.1 score date: {}'.format(str(date.today()))
+        )
 
     def test_match_score(self):
         self.assertEqual(self.ms.to_dict(), {
@@ -117,17 +126,23 @@ class ModelTest(unittest.TestCase):
             'player': self.p.to_dict()
         })
         self.assertAlmostEqual(self.ms.get_compare_score(10), 0.82)
-        self.assertEqual(str(self.ms), 'Match Score - player id: {} date: {} '
-                                       'week: {} month: {} year: {} overall: {}'.format(
-            1, str(date.today()), 0.1, 0.1, 0.1, 0.1))
+        self.assertEqual(
+            str(self.ms),
+            'Match Score - player id: {} date: {} '
+            'week: {} month: {} year: {} overall: {}'.format(
+                1, str(date.today()), 0.1, 0.1, 0.1, 0.1)
+        )
 
 
 class ServiceTest(unittest.TestCase):
 
     def setUp(self):
-        app.config['SQLALCHEMY_DATABASE_URI'] = \
-            default_db_uri.replace("local", "service_test")
+        if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+            app.config['SQLALCHEMY_DATABASE_URI'] = default_db_uri.replace(
+                "local", "test"
+            )
         app.testing = True
+        self.app = app.test_client()
         with app.app_context():
             db.drop_all()
             db.create_all()
@@ -135,7 +150,9 @@ class ServiceTest(unittest.TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        os.unlink(default_db_path.replace("local", "service_test"))
+        if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+            os.unlink(default_db_path.replace("local", "test"))
+        del self.app
 
     def test_get_match_score_from_json(self):
         score = get_match_score_from_json(
@@ -300,8 +317,10 @@ class ServiceTest(unittest.TestCase):
 class ViewTest(unittest.TestCase):
 
     def setUp(self):
-        app.config['SQLALCHEMY_DATABASE_URI'] = \
-            default_db_uri.replace("local", "view_test")
+        if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+            app.config['SQLALCHEMY_DATABASE_URI'] = default_db_uri.replace(
+                "local", "test"
+            )
         app.testing = True
         self.app = app.test_client()
         with app.app_context():
@@ -311,7 +330,8 @@ class ViewTest(unittest.TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        os.unlink(default_db_path.replace("local", "view_test"))
+        if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+            os.unlink(default_db_path.replace("local", "test"))
         del self.app
 
     def __clean_test_data(self):
