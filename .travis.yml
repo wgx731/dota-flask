@@ -1,25 +1,25 @@
 language: python
 env:
-    - DATABASE_URL=postgresql://localhost/travis_ci_test
+- DATABASE_URL=postgresql://localhost/travis_ci_test
 services:
-    - postgresql
+- postgresql
 branches:
-    only: master
+  only: master
 python:
-    - '3.6'
+- '3.6'
 install:
-    - pip install -r requirements-travis.txt
+- pip install -r requirements-travis.txt
 before_script:
-    - psql -c 'create database travis_ci_test;' -U postgres
-    - python create_db.py
+- psql -c 'create database travis_ci_test;' -U postgres
+- python create_db.py
 script:
-    - coverage run --source=app tests.py
+- coverage run --source=app tests.py
 after_success:
-    - coverage report
+- coverage report
 deploy:
   provider: heroku
   api_key:
-    secure: qwwklI7POqGjTlfvRCxL1tJOR8m9cyd+AmlOm8cF1JtoH/ZsZP7psHEoYCIgr6U5ax54Ufb/WABz30VdpMa8gzHDZRB98rLF7DiqP8S2AQ41fvMWLYG4A5uAXDYZ2Zoop5pAje0qcairb+Uv1tTl92M7mQVCc6bjEeCcstZd16TPrJ9BARSIfWN/UDCSksi8Ofvt/XwjOoiP8016sRCwjnG+RbymSXUeMUDVlyjRaDcyGu2rFwvZG2RCsvFhU3y7qtYZyGfV80ucL0dnr5EAaf1FwGXRjNcoJiMG82ys0C3QVWz3D48FsVKl6rQd07y48Q4H3UNa96FxKP0XdL9C8PGFWHYeg/YkhoJErVeF8rPS+CF4BwmUHHGoaD5GcVVy9D5FF+e2hIbqI+j5TXAlHJdu+OlAnbvNE2gs82atVFchu9YjlO3ciRQd6jLtJFoqYSJE7YJAduuyw2U6c7wrpsYlB/oZyBL80pFQmW8rDmZLpDhcunj7sMqVX8nNNQb4nHzUb8gs4L+zKK+PBJgzWISKWjnSGTwpy19MzRBxoWC0k+Ywcoj+qgSOcFEYzD5PFZVeKiEmmv32DTTsgu+qalxyk7icrqI+DauVpM48E8e+TXRdiwYYy0Jk2zyRUpaIXtm52sZkqnzJ2O43SK9edQoGGty0cOiN1++7Yz3vwjw=
+    secure: z6icEvzbHhAyom6b0z2z7rc4Q9x+b9Egs+Y0tuwN//An46n1P7Ab+IXB4r8oySMgi3jiTQlnuhCBpnKVPA3FfHmlO3CVQ4FlPnuypYqNVBgL8lpt847fH4cU9w+A5rLGwGtU3K01NKzsNADLbLCATyC9+gEv/mf6GxHF48oV5fNM/Zm0pG0f5CPQyXYnplb4Uf0RAhLD2Q+5JDvDJ9AEECMsgmXhPCl1S92EkMzxHhpC3qCQ4+rwJJpGcGZxlwNwq0oyWiMbYpmaVuSw6+17Lb3R1C2mi/zNHSaHsyDyQXnHRwyY/VvQLKDuNrjU2CoYMQ7AnISnzhoqrgHY6SFIe1ERDBou8qGMiSRcIhd9Z+/geJj8y7KLXX9HCZzBsQ/aJ83GnrNLKcMbGpHlGPQKDM/AyW72kWEZLJo9LSYxcwd23YkA3XW3BiBFyEfBUhmu/k015kQYX7ew8Bksz3g+e+wMLKzzpz84bZqO6M/KQLpReqjACXRJpspnhGyyftfqeA8zqKMV7Wxysr5TfadT45b0Ik9duCNjcaK63ghc7NQlYmdnaehUGGM9KQeSRVgqEB9FxzfMS5nk8ctgEsZucRmm73DWaUBC/5iLZzRtVdcHQC04D/ubAec+1y762pBoDzUnywthChZrtGjzqQxdedBVIdUIoRWP4n3IoprBWWY=
   app: dota-flask
   on:
     repo: wgx731/dota-flask
