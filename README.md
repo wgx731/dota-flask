@@ -1,6 +1,8 @@
 Dota Flask
 ========================
 
+[![Build Status](https://travis-ci.org/wgx731/dota-flask.svg?branch=master)](https://travis-ci.org/wgx731/dota-flask)
+
 ## Idea Source 
 
 [Dota](https://en.wikipedia.org/wiki/Defense_of_the_Ancients) status check :video_game:

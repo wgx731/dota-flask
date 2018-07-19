@@ -11,7 +11,7 @@ install:
     - pip install -r requirements-travis.txt
 before_script:
     - psql -c 'create database travis_ci_test;' -U postgres
-    - python create_db_only.py
+    - python create_db.py
 script:
     - coverage run --source=app tests.py
 after_success:
