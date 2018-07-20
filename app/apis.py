@@ -7,13 +7,13 @@ from urllib.error import URLError
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
-def get_dota_open_api(path, base_url='https://api.opendota.com', params=None):
+def get_dota_open_api(path, base_url='https://api.opendota.com', params=None, r=request):
     url = base_url + '/' + path
     if params is not None:
         url += '?' + parse.urlencode(params)
     app.logger.info('API URL: {}'.format(url))
     try:
-        req = request.urlopen(request.Request(url), timeout=30.0)
+        req = r.urlopen(r.Request(url), timeout=30.0)
         if req.getcode() != 200:
             return None
         return req.read()

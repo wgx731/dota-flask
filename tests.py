@@ -1,12 +1,14 @@
 import unittest
 import os
 import logging
+from urllib.error import URLError
 from unittest.mock import Mock
 from datetime import date
 from app import app, db, default_db_path, default_db_uri
 from app.models import Player, Hero, HeroScore, MatchScore
 from app.services import get_match_score_from_json, fetch_player_match_score, \
     populate_player_hero_scores_from_json, fetch_player_hero_scores
+from app.apis import get_dota_open_api
 
 
 app.logger.setLevel(logging.ERROR)
@@ -14,9 +16,20 @@ app.logger.setLevel(logging.ERROR)
 
 class APITest(unittest.TestCase):
 
-    @unittest.skip("TODO: add mock for request and test API")
     def test_api(self):
-        self.fail("you shouldn't be here.")
+        response_attrs = {'getcode.return_value': 200, 'read.return_value': 'test'}
+        mock_response = Mock(**response_attrs)
+        request_attrs = {'urlopen.return_value': mock_response, 'Request.return_value': None}
+        mock_request = Mock(**request_attrs)
+        self.assertEqual(get_dota_open_api('123', r=mock_request), 'test')
+        response_attrs = {'getcode.return_value': 401, 'read.return_value': 'test'}
+        mock_response = Mock(**response_attrs)
+        request_attrs = {'urlopen.return_value': mock_response, 'Request.return_value': None}
+        mock_request = Mock(**request_attrs)
+        self.assertIsNone(get_dota_open_api('234', params={'a': 'b'}, r=mock_request))
+        request_attrs = {'urlopen.side_effect': URLError('wrong url')}
+        mock_request = Mock(**request_attrs)
+        self.assertIsNone(get_dota_open_api('234', params={'a': 'b'}, r=mock_request))
 
 
 class ModelTest(unittest.TestCase):
