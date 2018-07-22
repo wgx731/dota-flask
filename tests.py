@@ -413,6 +413,13 @@ class ViewTest(unittest.TestCase):
         db.session.add(self.hs1)
         db.session.commit()
 
+    def test_index(self):
+        result = self.app.get('/')
+        self.assertEqual(result.status_code, 200)
+        self.assertIn(b'LeaderBoard', result.data)
+        self.assertIn(b'Comparison', result.data)
+        self.assertIn(b'Recommendation', result.data)
+
     def test_leader_board(self):
         # setup
         self.__setup_test_data()

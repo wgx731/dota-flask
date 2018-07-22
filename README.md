@@ -90,6 +90,12 @@ _NOTE:_ stop app using `Ctrl+C`, container will be removed once app is stopped
 
 * `heroku container:rm web -a <heroku-docker-app-name>`
 
+
+### Setup Google Analytics Tracking ID
+
+* `heroku config -a <heroku-docker-app-name>`
+* `heroku config:set GTAG_TRACKING_ID=<gtag-tracking-id-for-heroku-docker-app> -a <heroku-docker-app-name>`
+
 ### Clean Up Docker Images
 
 * `docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc)`
@@ -156,6 +162,12 @@ _NOTE:_ stop app using `Ctrl+C`, use `Git Bash` in Windows
 ### Create Heroku Postgresql Database (One Time Setup)
 
 * `heroku run python create_db.py -a <heroku-normal-app-name>`
+
+
+### Setup Google Analytics Tracking ID
+
+* `heroku config -a <heroku-normal-app-name>`
+* `heroku config:set GTAG_TRACKING_ID=<gtag-tracking-id-for-heroku-normal-app> -a <heroku-normal-app-name>`
 
 ## Contributing
 

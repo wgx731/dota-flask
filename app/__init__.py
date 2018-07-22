@@ -10,6 +10,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', default_db_uri
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.gtag_tracking_id = os.environ.get(
+    'GTAG_TRACKING_ID',
+    'your-google-tracking-id'
+)
 
 db = flask_sqlalchemy.SQLAlchemy(app)
 

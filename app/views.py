@@ -14,14 +14,24 @@ def error(e):
         code = e.code
         return render_template(
             'error.html',
-            message=str(e)
+            message=str(e),
+            gtag_tracking_id=app.gtag_tracking_id
         ), code
     except Exception as e:
         app.logger.warning('exception is %s' % e)
         return render_template(
             'error.html',
-            message='unknown error.'
+            message='unknown error.',
+            gtag_tracking_id=app.gtag_tracking_id
         ), 500
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template(
+        'index.html',
+        gtag_tracking_id=app.gtag_tracking_id
+    )
 
 
 @app.route('/leaderboard', methods=['GET'])
@@ -48,7 +58,8 @@ def leader_board():
         return render_template(
             'leader_board.html',
             title='Leader Board',
-            scores=score_list
+            scores=score_list,
+            gtag_tracking_id=app.gtag_tracking_id
         )
 
 
@@ -79,7 +90,8 @@ def compare_players():
             title='Compare {} with {}'.format(s1.player.account_id, s2.player.account_id),
             result=compare_result,
             s1=s1,
-            s2=s2
+            s2=s2,
+            gtag_tracking_id=app.gtag_tracking_id
         )
 
 
@@ -99,5 +111,6 @@ def recommend_hero():
         return render_template(
             'recommend_hero.html',
             title='Recommend Hero For {}'.format(player_id),
-            score=s
+            score=s,
+            gtag_tracking_id=app.gtag_tracking_id
         )
