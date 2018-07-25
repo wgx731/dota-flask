@@ -50,9 +50,7 @@ Dota Flask
 
 ### Run Flask App Test With Coverage
 
-* `docker run -ti --rm -v $PWD:/opt/webapp -v $PWD/db:/opt/webapp/db dota-flask coverage run --source=app tests.py`
-* `docker run -ti --rm -v $PWD:/opt/webapp dota-flask coverage report`
-* `docker run -ti --rm -v $PWD:/opt/webapp dota-flask coverage html`
+* `docker run -ti --rm -v $PWD:/opt/webapp -v $PWD/db:/opt/webapp/db dota-flask /bin/sh -c 'coverage run --source=app tests.py && coverage report'`
 
 ### Start Flask App Container
 

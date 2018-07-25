@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row column">
-        <h5>{{score.player.account_id}}</h5>
-        <img src="{{score.player.avatar}}"/>
-        <ul>
-            <li>hero name: {{score.hero.name}}</li>
-            <li>hero localized name: {{score.hero.localized_name}}</li>
-            <li>hero primary attr: {{score.hero.primary_attr}}</li>
-            <li>hero attack type: {{score.hero.attack_type}}</li>
-            <li>hero roles: {{score.hero.roles}}</li>
-            <li>hero legs: {{score.hero.legs}}</li>
-            <li>hero rank score: {{score.rank_score}}</li>
-            <li>hero win score: {{score.win_score}}</li>
-            <li>hero last played score: {{score.last_played_score}}</li>
-            <li>hero overall score: {{score.overall_score}}</li>
-        </ul>
+<div class="grid-x grid-margin-x small-up-1 medium-up-1 large-up-1 text-center">
+    <div class="cell">
+        <div class="callout success">
+            <h5>{{score.player.account_id}} <img src="{{score.player.avatar}}"/></h5>
+            <p>hero name: {{score.hero.name}}</p>
+            <p>hero localized name: {{score.hero.localized_name}}</p>
+            <p>hero primary attr: {{score.hero.primary_attr}}</p>
+            <p>hero attack type: {{score.hero.attack_type}}</p>
+            <p>hero roles: {{score.hero.roles}}</p>
+            <p>hero legs: {{score.hero.legs}}</p>
+            <p>hero rank score: {{score.rank_score}}</p>
+            <p>hero win score: {{score.win_score}}</p>
+            <p>hero last played score: {{score.last_played_score}}</p>
+            <p>hero overall score: {{score.overall_score}}</p>
+        </div>
+    </div>
 </div>
 <div class="row column text-center">
     <p class="callout small secondary">Recommend Engine Formula: rank_score * 0.5 + normalized_win_score * 0.45 + normalized_last_played_score * 0.05</p>
