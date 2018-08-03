@@ -17,10 +17,8 @@ script:
 after_success:
 - coverage report
 deploy:
-  if: branch = master
   provider: heroku
   api_key:
     secure: c/e/VI27VIxkboeobj90HI5WyGKPcAuWYOwkkj0NWG1CDW4cD/rxQjQUPEQtnUWkC2KCdITQlJHis0RDouujYDmfbZM7Cgw166agwGmUQgR77I3zFGkJCE8UCkGwpuVxxYkjIGzzZy/mdRdWQTHUPczb+tM3MRdoJ8ju+M+J/ML+Hv4PX+7qpJ43QOUBu49jpKmYLl2DZv/xxGwgUKKLEPdNwQMJoIliW+uLw5sP+V9dV3oRejzGSa5yZg/ckKIO8Igr3nJNT8cvnCXxRBCJGJU64GGcsnxnRNi3tsMKU81GrMmQXhbHMfGAqutfX5J6r6UEF0kThA8abosZ5TpjtNeR9IGB1uUDZuNzNMD8T6IMtKqjEIgyog3RZeN0ZWrhiQ5S6TgfsVTmJQXN1r4KJ1usv3fTHtYBm97uyn3d/HT8E0SIqBI0AyHqw8u/i/PsxPOGr1npNSDhCr4fdknldmd6SO2AKaHYqGqETBytHepZg1VrvleSJV6n62k+IOQfsGkT8/HK1b58G0dKT46IQyz2PxQHfYba71OaP7F9wvMJe9LMoMBjARu42ldLmRtZCIdI64i7W6KMsxtbFyDMT7HKhcxYRUxikttktx4BxA7k665svXdVFYJEweA6h9DxQNB3zbnUqHUD8aazmt+YyQziSpelMa9vlAYPZnv8ErQ=
   app: dota-flask
-  on:
-    repo: wgx731/dota-flask
+  on: master
