@@ -3,8 +3,6 @@ env:
 - DATABASE_URL=postgresql://localhost/travis_ci_test
 services:
 - postgresql
-branches:
-  only: master
 python:
 - '3.6'
 install:
