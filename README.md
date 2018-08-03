@@ -5,8 +5,8 @@ Dota Flask - A dota player status explorer
 
 ## Presentation
 
-[Slides](https://goo.gl/6pbf7i)
-[Demo](https://dota-flask.herokuapp.com)
+* [Slides](https://goo.gl/6pbf7i)
+* [Demo](https://dota-flask.herokuapp.com)
 
 ## Idea Source 
 
