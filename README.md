@@ -1,7 +1,12 @@
-Dota Flask
+Dota Flask - A dota player status explorer
 ========================
 
 [![Build Status](https://travis-ci.org/wgx731/dota-flask.svg?branch=master)](https://travis-ci.org/wgx731/dota-flask)
+
+## Presentation
+
+[Slides](https://goo.gl/6pbf7i)
+[Demo](https://dota-flask.herokuapp.com)
 
 ## Idea Source 
 
