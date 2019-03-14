@@ -14,6 +14,10 @@ app.gtag_tracking_id = os.environ.get(
     'GTAG_TRACKING_ID',
     'your-google-tracking-id'
 )
+app.secret_key = os.environ.get(
+    'SESSION_SECRET_KEY',
+    'default_secret_key'
+)
 
 db = flask_sqlalchemy.SQLAlchemy(app)
 
